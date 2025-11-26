@@ -1,5 +1,6 @@
 import os
 import uuid
+from django.utils import timezone
 
 from django.db import models
 from django.utils.text import slugify
@@ -72,6 +73,7 @@ class Post(models.Model):
     )
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    edited = models.DateTimeField(null=True, blank=True)
     picture = models.ImageField(
         upload_to="post_image_file_path", null=True, blank=True
     )
@@ -84,6 +86,12 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        # if the object already exists (not a new post), mark edited time
+        if self.pk is not None:
+            self.edited = timezone.now()
+        super().save(*args, **kwargs)
 
 
 class Like(models.Model):
