@@ -1,6 +1,28 @@
+import os
+import uuid
+
 from django.db import models
+from django.utils.text import slugify
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from social_media_api import settings
+
+
+def profile_image_file_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/profiles/", filename)
+
+
+def post_image_file_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/posts/", filename)
 
 
 class Profile(models.Model):
@@ -14,8 +36,8 @@ class Profile(models.Model):
     bio = models.TextField(max_length=300)
     country_of_residence = models.CharField(max_length=65)
     picture = models.ImageField(
-        null=True, blank=True
-    )  # TODO upload to part > upload_to="images/"
+        upload_to="profile_image_file_path", null=True, blank=True
+    )
 
     def __str__(self):
         return self.first_name + " " + self.last_name
@@ -51,8 +73,8 @@ class Post(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     picture = models.ImageField(
-        upload_to="images/", null=True, blank=True
-    )  # TODO upload to part
+        upload_to="post_image_file_path", null=True, blank=True
+    )
     scheduled_publish = models.DateTimeField(null=True, blank=True)
     hashtags = models.ManyToManyField(
         Hashtag,
