@@ -120,7 +120,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return PostSerializer
 
     def get_queryset(self):
-        queryset = (Post.objects.all().annotate(
+        queryset = (Post.objects.all().filter(published=True).annotate(
             likes_count=Count('likes', distinct=True),
             comments_count=Count('comments', distinct=True)))
 

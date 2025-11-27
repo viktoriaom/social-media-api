@@ -78,6 +78,7 @@ class Post(models.Model):
         upload_to="post_image_file_path", null=True, blank=True
     )
     scheduled_publish = models.DateTimeField(null=True, blank=True)
+    published = models.BooleanField(default=False)
     hashtags = models.ManyToManyField(
         Hashtag,
         blank=True,
