@@ -1,4 +1,5 @@
 from django.db.models import Count
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -87,6 +88,39 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="first_name",
+                type={"type": "str"},
+                description="Filter by first_name (ex. ?first_name=Andy)",
+            ),
+            OpenApiParameter(
+                name="last_name",
+                type={"type": "str"},
+                description="Filter by last_name (ex. ?last_name=McFerrin)",
+            ),
+            OpenApiParameter(
+                name="country_of_residence",
+                type={"type": "str"},
+                description="Filter by country_of_residence (ex. ?country_of_residence=Ukraine)",
+            ),
+            OpenApiParameter(
+                name="following",
+                type={"type": "str"},
+                description="Filter profiles of users that the authenticated user is following (ex. ?following=true)",
+            ),
+            OpenApiParameter(
+                name="follower",
+                type={"type": "str"},
+                description="Filter profiles of users the authenticated user is followed by (ex. ?follower=true)",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of performances."""
+        return super().list(request, *args, **kwargs)
+
 
 class FollowViewSet(viewsets.ModelViewSet):
     queryset = Follow.objects.all()
@@ -165,6 +199,34 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="mine",
+                type={"type": "str"},
+                description="Filter posts where authenticated user is the author (ex. ?mine=true)",
+            ),
+            OpenApiParameter(
+                name="following",
+                type={"type": "str"},
+                description="Filter posts of users that authenticated user is following (ex. ?following=true)",
+            ),
+            OpenApiParameter(
+                name="liked",
+                type={"type": "str"},
+                description="Filter posts of users that authenticated user has liked (ex. ?liked=true)",
+            ),
+            OpenApiParameter(
+                name="hashtags",
+                type={"type": "str"},
+                description="Filter posts by hashtags text (ex. ?hashtags=love)",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of performances."""
+        return super().list(request, *args, **kwargs)
 
 
 class LikeViewSet(viewsets.ModelViewSet):
