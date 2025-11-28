@@ -61,7 +61,7 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ["id",
                   "text",
                   "created_at",
-                  "picture",
+                  "scheduled_publish",
                   "hashtags"
                   ]
 
