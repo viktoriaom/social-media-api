@@ -22,7 +22,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView
 )
-from social_media_api import settings
+from django.conf import settings
 
 
 urlpatterns = [
