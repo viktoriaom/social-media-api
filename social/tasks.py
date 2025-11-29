@@ -20,6 +20,7 @@ def publish_posts():
 
     for post in posts_to_publish:
         post.published = True
+        post.created_at = post.scheduled_publish
         post.save()
 
     return posts_to_publish.count()
