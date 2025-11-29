@@ -4,12 +4,8 @@ from django.utils import timezone
 
 from django.db import models
 from django.utils.text import slugify
-from rest_framework import status
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
-from social_media_api import settings
+from django.conf import settings
 
 
 def profile_image_file_path(instance, filename):
@@ -89,9 +85,20 @@ class Post(models.Model):
         ordering = ["-created_at"]
 
     def save(self, *args, **kwargs):
-        # if the object already exists (not a new post), mark edited time
+        # if the object already exists (not a new post)
         if self.pk is not None:
-            self.edited = timezone.now()
+            old = Post.objects.get(pk=self.pk)
+
+            # Only update edited if content fields changed
+            content_changed = (
+                    old.text != self.text or
+                    old.picture != self.picture or
+                    old.hashtags.exists() != self.hashtags.exists()
+            )
+
+            if content_changed:
+                self.edited = timezone.now()
+
         super().save(*args, **kwargs)
 
 
