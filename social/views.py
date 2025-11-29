@@ -142,7 +142,9 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        scheduled_publish = serializer.validated_data.get("scheduled_publish")
+        published = scheduled_publish is None
+        serializer.save(author=self.request.user, published=published)
 
     def get_serializer_class(self):
         if self.action == "list":
