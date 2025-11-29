@@ -56,7 +56,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: "celery -A social_media_api beat -l info"
+    command: >
+      sh -c "mkdir -p /tmp/celerybeat && 
+      celery -A social_media_api beat -l info -s /tmp/celerybeat/schedule"
     depends_on:
       - social
       - redis
