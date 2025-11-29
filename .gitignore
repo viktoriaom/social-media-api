@@ -9,6 +9,8 @@ media/
 .DS_Store
 .pytest_cache/
 **__pycache__/
+static/
+staticfiles/
 
 # Celery
 celerybeat-schedule*
