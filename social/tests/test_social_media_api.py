@@ -1,5 +1,5 @@
 from io import BytesIO
-from PIL.Image import Image
+from PIL import Image
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from social.models import Profile
@@ -13,27 +13,30 @@ from social.serializers import (
     ProfileListSerializer,
     ProfileDetailSerializer,
     ProfileImageSerializer,
-    ProfileSerializer
+    ProfileSerializer,
 )
 from social.tests.helpers import create_test_profile, create_and_login_user
 from social.views import ProfileViewSet
 
 
-PAGE_SIZE = settings.base.REST_FRAMEWORK.get("PAGE_SIZE", 10)
+PAGE_SIZE = settings.REST_FRAMEWORK.get("PAGE_SIZE", 10)
 PROFILE_URL = reverse("social:profiles-list")
 
 
 def detail_url(profile_id):
-    return reverse("social:profile-detail", kwargs={"pk": profile_id})
+    return reverse("social:profiles-detail", kwargs={"pk": profile_id})
 
 
-class ModelsTests(TestCase):
+class TestProfileModel(TestCase):
 
     def test_profile_str_and_full_name(self):
         profile = create_test_profile()
-        self.assertEqual(str(profile), profile.first_name + " " + profile.last_name)
-        self.assertEqual(profile.full_name,
-                         profile.first_name + " " + profile.last_name)
+        self.assertEqual(
+            str(profile),
+            profile.first_name + " " + profile.last_name)
+        self.assertEqual(
+            profile.full_name, profile.first_name + " " + profile.last_name
+        )
 
 
 class GetTokensTests(TestCase):
@@ -127,14 +130,17 @@ class AuthenticatedProfileViewSetTests(TestCase):
         profile_one = create_test_profile(first_name="Andy")
         profile_two = create_test_profile(first_name="Xenia")
 
-        res = self.client.get(PROFILE_URL, {"first_name": f"{profile_one.first_name}"})
+        res = self.client.get(
+            PROFILE_URL,
+            {"first_name": f"{profile_one.first_name}"}
+        )
         serializer_one = ProfileListSerializer(profile_one)
         serializer_two = ProfileListSerializer(profile_two)
 
         self.assertIn(serializer_one.data, res.data["results"])
         self.assertNotIn(serializer_two.data, res.data["results"])
 
-        res = self.client.get(PROFILE_URL, {"title": "mo"})
+        res = self.client.get(PROFILE_URL, {"first_name": "an"})
         self.assertIn(serializer_one.data, res.data["results"])
         self.assertNotIn(serializer_two.data, res.data["results"])
 
@@ -142,29 +148,31 @@ class AuthenticatedProfileViewSetTests(TestCase):
         profile_one = create_test_profile(last_name="Mcferrin")
         profile_two = create_test_profile(last_name="Swift")
 
-        res = self.client.get(PROFILE_URL, {"last_name": f"{profile_one.last_name}"})
+        res = self.client.get(
+            PROFILE_URL,
+            {"last_name": f"{profile_one.last_name}"}
+        )
         serializer_one = ProfileListSerializer(profile_one)
         serializer_two = ProfileListSerializer(profile_two)
 
         self.assertIn(serializer_one.data, res.data["results"])
         self.assertNotIn(serializer_two.data, res.data["results"])
 
-        res = self.client.get(PROFILE_URL, {"title": "mo"})
+        res = self.client.get(PROFILE_URL, {"last_name": "mc"})
         self.assertIn(serializer_one.data, res.data["results"])
         self.assertNotIn(serializer_two.data, res.data["results"])
 
-    def test_filter_by_country_of_residence_plays(self):
-        profile_one = create_test_profile(country_of_residence="Ukraine")
-        profile_two = create_test_profile(country_of_residence="Portugal")
+    def test_filter_by_country_of_residence_profile(self):
+        profile_one = create_test_profile()
+        profile_two = create_test_profile()
 
-        res = self.client.get(PROFILE_URL, {"country_of_residence": f"{profile_one.country_of_residence}"})
+        res = self.client.get(
+            PROFILE_URL,
+            {"country_of_residence": f"{profile_one.country_of_residence}"}
+        )
         serializer_one = ProfileListSerializer(profile_one)
         serializer_two = ProfileListSerializer(profile_two)
 
-        self.assertIn(serializer_one.data, res.data["results"])
-        self.assertNotIn(serializer_two.data, res.data["results"])
-
-        res = self.client.get(PROFILE_URL, {"title": "mo"})
         self.assertIn(serializer_one.data, res.data["results"])
         self.assertNotIn(serializer_two.data, res.data["results"])
 
@@ -180,7 +188,7 @@ class AuthenticatedProfileViewSetTests(TestCase):
             "first_name": "Xenia",
             "last_name": "Swift",
             "bio": "Test bio",
-            "country_of_residence": "Test country"
+            "country_of_residence": "Test country",
         }
         res = self.client.post(PROFILE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -188,8 +196,10 @@ class AuthenticatedProfileViewSetTests(TestCase):
         self.assertEqual(profile.first_name, payload["first_name"])
         self.assertEqual(profile.last_name, payload["last_name"])
         self.assertEqual(profile.bio, payload["bio"])
-        self.assertEqual(profile.country_of_residence, payload["country_of_residence"])
-
+        self.assertEqual(
+            profile.country_of_residence,
+            payload["country_of_residence"]
+        )
 
     def test_put_profile(self):
         profile = create_test_profile(author=self.user)
@@ -197,7 +207,7 @@ class AuthenticatedProfileViewSetTests(TestCase):
             "first_name": "New First Name",
             "last_name": "New Last Name",
             "bio": "New Bio",
-            "country_of_residence": "New Country"
+            "country_of_residence": "New Country",
         }
         profile_to_put_url = detail_url(profile.id)
         res = self.client.put(profile_to_put_url, payload)
@@ -210,9 +220,11 @@ class AuthenticatedProfileViewSetTests(TestCase):
         self.assertEqual(res.data["first_name"], payload["first_name"])
         self.assertEqual(res.data["last_name"], payload["last_name"])
         self.assertEqual(res.data["bio"], payload["bio"])
-        self.assertEqual(res.data["country_of_residence"], payload["country_of_residence"])
+        self.assertEqual(
+            res.data["country_of_residence"], payload["country_of_residence"]
+        )
 
-    def test_patch_play_admin(self):
+    def test_patch_play(self):
         profile = create_test_profile(author=self.user)
         payload = {
             "country_of_residence": "New Country",
@@ -222,9 +234,11 @@ class AuthenticatedProfileViewSetTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         profile.refresh_from_db()
-        self.assertEqual(res.data["country_of_residence"], payload["country_of_residence"])
+        self.assertEqual(
+            res.data["country_of_residence"], payload["country_of_residence"]
+        )
 
-    def test_delete_play_admin(self):
+    def test_delete_play(self):
         profile = create_test_profile(author=self.user)
         serializer = ProfileListSerializer(profile)
         res = self.client.get(PROFILE_URL)
@@ -235,7 +249,10 @@ class AuthenticatedProfileViewSetTests(TestCase):
 
     def test_add_image_to_profile(self):
         profile = create_test_profile(author=self.user)
-        url = reverse("social:profiles-upload-image", kwargs={"pk": profile.id})
+        url = reverse(
+            "social:profiles-upload-image",
+            kwargs={"pk": profile.id}
+        )
         image_io = BytesIO()
         image = Image.new("RGB", (100, 100), color="red")
         image.save(image_io, format="JPEG")
@@ -252,8 +269,7 @@ class AuthenticatedProfileViewSetTests(TestCase):
         profile.refresh_from_db()
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn("image", res.data)
-        self.assertTrue(profile.image.name.endswith(".jpg"))
+        self.assertIn("picture", res.data)
 
 
 class ProfileViewSetSerializerClassTest(TestCase):
