@@ -107,7 +107,9 @@ class Like(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="likes"
+    )
 
 
 class Comment(models.Model):
@@ -115,7 +117,9 @@ class Comment(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="comments"
+    )
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

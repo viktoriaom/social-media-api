@@ -103,17 +103,20 @@ class ProfileViewSet(viewsets.ModelViewSet):
             OpenApiParameter(
                 name="country_of_residence",
                 type={"type": "str"},
-                description="Filter by country_of_residence (ex. ?country_of_residence=Ukraine)",
+                description="Filter by country_of_residence "
+                            "(ex. ?country_of_residence=Ukraine)",
             ),
             OpenApiParameter(
                 name="following",
                 type={"type": "str"},
-                description="Filter profiles of users that the authenticated user is following (ex. ?following=true)",
+                description="Filter profiles of users that the authenticated "
+                            "user is following (ex. ?following=true)",
             ),
             OpenApiParameter(
                 name="follower",
                 type={"type": "str"},
-                description="Filter profiles of users the authenticated user is followed by (ex. ?follower=true)",
+                description="Filter profiles of users the authenticated"
+                            " user is followed by (ex. ?follower=true)",
             )
         ]
     )
@@ -207,22 +210,26 @@ class PostViewSet(viewsets.ModelViewSet):
             OpenApiParameter(
                 name="mine",
                 type={"type": "str"},
-                description="Filter posts where authenticated user is the author (ex. ?mine=true)",
+                description="Filter posts where authenticated user "
+                            "is the author (ex. ?mine=true)",
             ),
             OpenApiParameter(
                 name="following",
                 type={"type": "str"},
-                description="Filter posts of users that authenticated user is following (ex. ?following=true)",
+                description="Filter posts of users that authenticated "
+                            "user is following (ex. ?following=true)",
             ),
             OpenApiParameter(
                 name="liked",
                 type={"type": "str"},
-                description="Filter posts of users that authenticated user has liked (ex. ?liked=true)",
+                description="Filter posts of users that "
+                            "authenticated user has liked (ex. ?liked=true)",
             ),
             OpenApiParameter(
                 name="hashtags",
                 type={"type": "str"},
-                description="Filter posts by hashtags text (ex. ?hashtags=love)",
+                description="Filter posts by "
+                            "hashtags text (ex. ?hashtags=love)",
             )
         ]
     )
