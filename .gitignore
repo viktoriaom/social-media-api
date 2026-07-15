@@ -1,2 +1,18 @@
 .idea/
 venv
+**__pycache__
+db.sqlite3
+media/
+.env
+.vscode/
+*.iml
+.DS_Store
+.pytest_cache/
+**__pycache__/
+static/
+staticfiles/
+
+# Celery
+celerybeat-schedule*
+celerybeat.pid
+*.log
